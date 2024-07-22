@@ -1,0 +1,3358 @@
+openapi: 3.0.1
+info:
+  description: |-
+    REST API documentation for accessing liquidity on Layer 2.
+
+    AVNU is a decentralized exchange protocol enabling the fastest and the most efficient operations in DeFi for Layer 2 with better pricing, zero slippage, MEV-protection and gasless trading.
+  title: AVNU API
+  version: 1.0.0
+servers:
+- url: https://starknet.api.avnu.fi
+- url: https://sepolia.api.avnu.fi
+paths:
+  /paymaster/v1/execute:
+    post:
+      description: This endpoint enables dapps or users to execute calls using the
+        gasless service
+      operationId: execute_1
+      parameters:
+      - explode: false
+        in: header
+        name: api-key
+        required: false
+        schema:
+          type: string
+        style: simple
+      - description: "When the given value is provided with the value 'true', the\
+          \ response header 'signature' will be returned."
+        explode: false
+        in: header
+        name: ask-signature
+        required: false
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExecuteRequest'
+        required: true
+      responses:
+        "401":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Unauthorized
+        "400":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Bad Request
+        "500":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Internal Server Error
+        "429":
+          content:
+            '*/*':
+              schema:
+                type: string
+          description: Too Many Requests
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExecuteResponse'
+          description: OK
+          headers:
+            signature:
+              description: "The response body signature. Only returned when 'ask-signature'\
+                \ has been provided. To validate the signature, you need first to\
+                \ encode the body using keccak and to compute the hash with the encoded\
+                \ value. Then your can verify the signature using the public key,\
+                \ the hash and the signature. You can find an example here: https://github.com/419Labs/avnu-sdk/blob/main/src/services.ts#L23"
+              explode: false
+              schema:
+                type: string
+              style: simple
+      summary: Execute the calls
+      tags:
+      - Paymaster
+  /paymaster/v1/build-typed-data:
+    post:
+      description: "This endpoint enables dapps or users to build the typed data from\
+        \ a list of calls. Once signed by the user, the typed data's calls will be\
+        \ executed by the API using the POST /execute endpoint"
+      operationId: buildTypedData_1
+      parameters:
+      - explode: false
+        in: header
+        name: api-key
+        required: false
+        schema:
+          type: string
+        style: simple
+      - description: "When the given value is provided with the value 'true', the\
+          \ response header 'signature' will be returned."
+        explode: false
+        in: header
+        name: ask-signature
+        required: false
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BuildTypedDataRequest'
+        required: true
+      responses:
+        "401":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Unauthorized
+        "400":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Bad Request
+        "500":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Internal Server Error
+        "429":
+          content:
+            '*/*':
+              schema:
+                type: string
+          description: Too Many Requests
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TypedData'
+          description: OK
+          headers:
+            signature:
+              description: "The response body signature. Only returned when 'ask-signature'\
+                \ has been provided. To validate the signature, you need first to\
+                \ encode the body using keccak and to compute the hash with the encoded\
+                \ value. Then your can verify the signature using the public key,\
+                \ the hash and the signature. You can find an example here: https://github.com/419Labs/avnu-sdk/blob/main/src/services.ts#L23"
+              explode: false
+              schema:
+                type: string
+              style: simple
+      summary: Build the typed data
+      tags:
+      - Paymaster
+  /paymaster/v1/accounts/{address}/rewards:
+    get:
+      description: Rewards are registered by a sponsor. This sponsor will pay account's
+        gas fees.
+      operationId: getRewards_1
+      parameters:
+      - explode: false
+        in: path
+        name: address
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: true
+        in: query
+        name: sponsor
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: campaign
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: protocol
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: "When the given value is provided with the value 'true', the\
+          \ response header 'signature' will be returned."
+        explode: false
+        in: header
+        name: ask-signature
+        required: false
+        schema:
+          type: string
+        style: simple
+      responses:
+        "401":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Unauthorized
+        "400":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Bad Request
+        "500":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Internal Server Error
+        "429":
+          content:
+            '*/*':
+              schema:
+                type: string
+          description: Too Many Requests
+        "200":
+          content:
+            '*/*':
+              schema:
+                items:
+                  $ref: '#/components/schemas/Reward'
+                type: array
+          description: OK
+          headers:
+            signature:
+              description: "The response body signature. Only returned when 'ask-signature'\
+                \ has been provided. To validate the signature, you need first to\
+                \ encode the body using keccak and to compute the hash with the encoded\
+                \ value. Then your can verify the signature using the public key,\
+                \ the hash and the signature. You can find an example here: https://github.com/419Labs/avnu-sdk/blob/main/src/services.ts#L23"
+              explode: false
+              schema:
+                type: string
+              style: simple
+      summary: Retrieve account's rewards
+      tags:
+      - Paymaster
+    post:
+      description: "You can decide to pay the gas fees of an address. To do so, you\
+        \ simply have to add a reward"
+      operationId: registerReward_1
+      parameters:
+      - explode: false
+        in: path
+        name: address
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: header
+        name: api-key
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: "When the given value is provided with the value 'true', the\
+          \ response header 'signature' will be returned."
+        explode: false
+        in: header
+        name: ask-signature
+        required: false
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterReward'
+        required: true
+      responses:
+        "401":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Unauthorized
+        "400":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Bad Request
+        "500":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Internal Server Error
+        "429":
+          content:
+            '*/*':
+              schema:
+                type: string
+          description: Too Many Requests
+        "200":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Reward'
+          description: OK
+          headers:
+            signature:
+              description: "The response body signature. Only returned when 'ask-signature'\
+                \ has been provided. To validate the signature, you need first to\
+                \ encode the body using keccak and to compute the hash with the encoded\
+                \ value. Then your can verify the signature using the public key,\
+                \ the hash and the signature. You can find an example here: https://github.com/419Labs/avnu-sdk/blob/main/src/services.ts#L23"
+              explode: false
+              schema:
+                type: string
+              style: simple
+      summary: Add a reward to an account
+      tags:
+      - Paymaster
+  /swap/v2/execute:
+    post:
+      description: This endpoint allows trader to execute swap transaction
+      operationId: execute_2
+      parameters:
+      - description: "When the given value is provided with the value 'true', the\
+          \ response header 'signature' will be returned."
+        explode: false
+        in: header
+        name: ask-signature
+        required: false
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExecuteSwapRequest'
+        required: true
+      responses:
+        "401":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Unauthorized
+        "400":
+          content:
+            application/json:
+              examples:
+                Invalid quote id:
+                  description: Invalid quote id
+                  value:
+                    messages:
+                    - Invalid quote id '12345'
+                Quote expired:
+                  description: Quote expired
+                  value:
+                    messages:
+                    - Quote '12345' expired
+                Taker address is missing:
+                  description: Taker address is missing
+                  value:
+                    messages:
+                    - Taker address is missing
+                Slippage too high:
+                  description: Slippage too high
+                  value:
+                    messages:
+                    - Slippage must be less than or equal to 1
+                Slippage too low:
+                  description: Slippage too low
+                  value:
+                    messages:
+                    - Slippage must be greater than or equal to 0
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Bad Request
+        "500":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Internal Server Error
+        "429":
+          content:
+            '*/*':
+              schema:
+                type: string
+          description: Too Many Requests
+        "200":
+          content:
+            application/json:
+              example:
+                transactionHash: 0x534e5f474f45524c49
+              schema:
+                $ref: '#/components/schemas/ExecuteSwapResponse'
+          description: OK
+          headers:
+            signature:
+              description: "The response body signature. Only returned when 'ask-signature'\
+                \ has been provided. To validate the signature, you need first to\
+                \ encode the body using keccak and to compute the hash with the encoded\
+                \ value. Then your can verify the signature using the public key,\
+                \ the hash and the signature. You can find an example here: https://github.com/419Labs/avnu-sdk/blob/main/src/services.ts#L23"
+              explode: false
+              schema:
+                type: string
+              style: simple
+      summary: Execute swap
+      tags:
+      - Swap
+  /swap/v2/build-typed-data:
+    post:
+      operationId: buildTypedData_2
+      parameters:
+      - description: "When the given value is provided with the value 'true', the\
+          \ response header 'signature' will be returned."
+        explode: false
+        in: header
+        name: ask-signature
+        required: false
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BuildSwapTypedDataRequest'
+        required: true
+      responses:
+        "401":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Unauthorized
+        "400":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Bad Request
+        "500":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Internal Server Error
+        "429":
+          content:
+            '*/*':
+              schema:
+                type: string
+          description: Too Many Requests
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TypedData'
+          description: OK
+          headers:
+            signature:
+              description: "The response body signature. Only returned when 'ask-signature'\
+                \ has been provided. To validate the signature, you need first to\
+                \ encode the body using keccak and to compute the hash with the encoded\
+                \ value. Then your can verify the signature using the public key,\
+                \ the hash and the signature. You can find an example here: https://github.com/419Labs/avnu-sdk/blob/main/src/services.ts#L23"
+              explode: false
+              schema:
+                type: string
+              style: simple
+      tags:
+      - Swap
+  /swap/v2/build:
+    post:
+      description: "The build endpoint enables traders to construct swap calldata,\
+        \ which can be used to execute the transaction independently. Prior to targeting\
+        \ the build endpoint, traders should have already chosen a quote from the\
+        \ GET /quotes endpoint."
+      operationId: build
+      parameters:
+      - description: "When the given value is provided with the value 'true', the\
+          \ response header 'signature' will be returned."
+        explode: false
+        in: header
+        name: ask-signature
+        required: false
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BuildSwapRequestDtoV2'
+        required: true
+      responses:
+        "401":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Unauthorized
+        "400":
+          content:
+            application/json:
+              examples:
+                Invalid quote id:
+                  description: Invalid quote id
+                  value:
+                    messages:
+                    - Invalid quote id '12345'
+                Quote expired:
+                  description: Quote expired
+                  value:
+                    messages:
+                    - Quote '12345' expired
+                Taker address is missing:
+                  description: Taker address is missing
+                  value:
+                    messages:
+                    - Taker address is missing
+                Slippage too high:
+                  description: Slippage too high
+                  value:
+                    messages:
+                    - Slippage must be less than or equal to 1
+                Slippage too low:
+                  description: Slippage too low
+                  value:
+                    messages:
+                    - Slippage must be greater than or equal to 0
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Bad Request
+        "500":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Internal Server Error
+        "429":
+          content:
+            '*/*':
+              schema:
+                type: string
+          description: Too Many Requests
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BuildSwapResponse'
+          description: OK
+          headers:
+            signature:
+              description: "The response body signature. Only returned when 'ask-signature'\
+                \ has been provided. To validate the signature, you need first to\
+                \ encode the body using keccak and to compute the hash with the encoded\
+                \ value. Then your can verify the signature using the public key,\
+                \ the hash and the signature. You can find an example here: https://github.com/419Labs/avnu-sdk/blob/main/src/services.ts#L23"
+              explode: false
+              schema:
+                type: string
+              style: simple
+      summary: Build swap calldata
+      tags:
+      - Swap
+  /swap/v1/build:
+    post:
+      description: "The build endpoint enables traders to construct swap calldata,\
+        \ which can be used to execute the transaction independently. Prior to targeting\
+        \ the build endpoint, traders should have already chosen a quote from the\
+        \ GET /quotes endpoint."
+      operationId: build_1
+      parameters:
+      - description: "When the given value is provided with the value 'true', the\
+          \ response header 'signature' will be returned."
+        explode: false
+        in: header
+        name: ask-signature
+        required: false
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BuildSwapRequest'
+        required: true
+      responses:
+        "401":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Unauthorized
+        "400":
+          content:
+            application/json:
+              examples:
+                Invalid quote id:
+                  description: Invalid quote id
+                  value:
+                    messages:
+                    - Invalid quote id '12345'
+                Quote expired:
+                  description: Quote expired
+                  value:
+                    messages:
+                    - Quote '12345' expired
+                Taker address is missing:
+                  description: Taker address is missing
+                  value:
+                    messages:
+                    - Taker address is missing
+                Slippage too high:
+                  description: Slippage too high
+                  value:
+                    messages:
+                    - Slippage must be less than or equal to 1
+                Slippage too low:
+                  description: Slippage too low
+                  value:
+                    messages:
+                    - Slippage must be greater than or equal to 0
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Bad Request
+        "500":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Internal Server Error
+        "429":
+          content:
+            '*/*':
+              schema:
+                type: string
+          description: Too Many Requests
+        "200":
+          content:
+            application/json:
+              example:
+                chainId: 0x534e5f4d41494e
+                contractAddress: 0x4270219d365d6b017231b52e92b3fb5d7c8378b05e9abc97724537a80e93b0f
+                entrypoint: multi_route_swap
+                calldata:
+                - 0x49d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7
+                - 0x38d7ea4c68000
+                - 0x0
+                - 0xda114221cb83fa859dbdb4c44beeaa0bb37c7537ad5ae66fe5e0efd20e6eb3
+                - 0x1bfce403888a06b2
+                - 0x0
+                - 0x1bd910f427db418a
+                - 0x0
+                - 0x360fb3a51bd291e5db0892b6249918a5689bc61760adcb350fe39cd725e1d22
+                - 0x0
+                - 0x0
+                - 0x1
+                - 0x49d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7
+                - 0xda114221cb83fa859dbdb4c44beeaa0bb37c7537ad5ae66fe5e0efd20e6eb3
+                - 0x5dd3d2f4429af886cd1a3b08289dbcea99a294197e9eb43b0e0325b4b
+                - 0x64
+                - 0x6
+                - 0xda114221cb83fa859dbdb4c44beeaa0bb37c7537ad5ae66fe5e0efd20e6eb3
+                - 0x49d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7
+                - 0x20c49ba5e353f80000000000000000
+                - 0x3e8
+                - 0x0
+                - 0x7527f0090a6ff9ccb66d13cd62d00
+              schema:
+                $ref: '#/components/schemas/BuildSwapResponse'
+          description: OK
+          headers:
+            signature:
+              description: "The response body signature. Only returned when 'ask-signature'\
+                \ has been provided. To validate the signature, you need first to\
+                \ encode the body using keccak and to compute the hash with the encoded\
+                \ value. Then your can verify the signature using the public key,\
+                \ the hash and the signature. You can find an example here: https://github.com/419Labs/avnu-sdk/blob/main/src/services.ts#L23"
+              explode: false
+              schema:
+                type: string
+              style: simple
+      summary: Build swap calldata
+      tags:
+      - Swap
+  /paymaster/v1/status:
+    get:
+      operationId: status
+      parameters:
+      - description: "When the given value is provided with the value 'true', the\
+          \ response header 'signature' will be returned."
+        explode: false
+        in: header
+        name: ask-signature
+        required: false
+        schema:
+          type: string
+        style: simple
+      responses:
+        "401":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Unauthorized
+        "400":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Bad Request
+        "500":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Internal Server Error
+        "429":
+          content:
+            '*/*':
+              schema:
+                type: string
+          description: Too Many Requests
+        "200":
+          content:
+            application/json:
+              example:
+                status: true
+              schema:
+                $ref: '#/components/schemas/GaslessStatus'
+          description: OK
+          headers:
+            signature:
+              description: "The response body signature. Only returned when 'ask-signature'\
+                \ has been provided. To validate the signature, you need first to\
+                \ encode the body using keccak and to compute the hash with the encoded\
+                \ value. Then your can verify the signature using the public key,\
+                \ the hash and the signature. You can find an example here: https://github.com/419Labs/avnu-sdk/blob/main/src/services.ts#L23"
+              explode: false
+              schema:
+                type: string
+              style: simple
+      summary: Get the current gasless service status
+      tags:
+      - Paymaster
+  /paymaster/v1/sponsor-activity:
+    get:
+      operationId: getSponsor
+      parameters:
+      - explode: false
+        in: header
+        name: api-key
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Default value 7 days ago
+        example: 2024-02-04T14:08:38.511Z
+        explode: true
+        in: query
+        name: startDate
+        required: false
+        schema:
+          format: date-time
+          type: string
+        style: form
+      - description: Default value is now
+        example: 2024-02-04T15:08:38.511Z
+        explode: true
+        in: query
+        name: endDate
+        required: false
+        schema:
+          format: date-time
+          type: string
+        style: form
+      - description: "When the given value is provided with the value 'true', the\
+          \ response header 'signature' will be returned."
+        explode: false
+        in: header
+        name: ask-signature
+        required: false
+        schema:
+          type: string
+        style: simple
+      responses:
+        "401":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Unauthorized
+        "400":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Bad Request
+        "500":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Internal Server Error
+        "429":
+          content:
+            '*/*':
+              schema:
+                type: string
+          description: Too Many Requests
+        "200":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/SponsorActivity'
+          description: OK
+          headers:
+            signature:
+              description: "The response body signature. Only returned when 'ask-signature'\
+                \ has been provided. To validate the signature, you need first to\
+                \ encode the body using keccak and to compute the hash with the encoded\
+                \ value. Then your can verify the signature using the public key,\
+                \ the hash and the signature. You can find an example here: https://github.com/419Labs/avnu-sdk/blob/main/src/services.ts#L23"
+              explode: false
+              schema:
+                type: string
+              style: simple
+      tags:
+      - Paymaster
+  /paymaster/v1/gas-token-prices:
+    get:
+      operationId: getGasTokenPrices
+      parameters:
+      - description: "When the given value is provided with the value 'true', the\
+          \ response header 'signature' will be returned."
+        explode: false
+        in: header
+        name: ask-signature
+        required: false
+        schema:
+          type: string
+        style: simple
+      responses:
+        "401":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Unauthorized
+        "400":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Bad Request
+        "500":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Internal Server Error
+        "429":
+          content:
+            '*/*':
+              schema:
+                type: string
+          description: Too Many Requests
+        "200":
+          content:
+            application/json:
+              example:
+              - tokenAddress: 0x53c91253bc9682c04929ca02ed00b3e423f6710d2ee7e0d5ebb06f3ecf368a8
+                priceInETH: 0x12f77e6e711d5
+                priceInUSD: 0.994361021417515
+                decimals: 6
+              - tokenAddress: 0x68f5c6a61780768455de69077e07e89787839bf8166decfbf92b645209c0fb8
+                priceInETH: 0x12f4c364bbf84
+                priceInUSD: 0.993801815895426
+                decimals: 6
+              schema:
+                $ref: '#/components/schemas/GaslessStatus'
+          description: OK
+          headers:
+            signature:
+              description: "The response body signature. Only returned when 'ask-signature'\
+                \ has been provided. To validate the signature, you need first to\
+                \ encode the body using keccak and to compute the hash with the encoded\
+                \ value. Then your can verify the signature using the public key,\
+                \ the hash and the signature. You can find an example here: https://github.com/419Labs/avnu-sdk/blob/main/src/services.ts#L23"
+              explode: false
+              schema:
+                type: string
+              style: simple
+      summary: Get the supported gas tokens and their prices in ETH and USD
+      tags:
+      - Paymaster
+  /paymaster/v1/accounts/{address}/compatible:
+    get:
+      description: "This endpoint indicates if the accounts is compatible with the\
+        \ gasless service and if so, what is the validation's gas consumed overhead.\
+        \ When simulating a transaction, the returned gas cost doesn't include the\
+        \ validation's gas consumed"
+      operationId: isCompatible_1
+      parameters:
+      - description: The account's address
+        example: 0x49d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7
+        explode: false
+        in: path
+        name: address
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: "When the given value is provided with the value 'true', the\
+          \ response header 'signature' will be returned."
+        explode: false
+        in: header
+        name: ask-signature
+        required: false
+        schema:
+          type: string
+        style: simple
+      responses:
+        "401":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Unauthorized
+        "400":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Bad Request
+        "500":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Internal Server Error
+        "429":
+          content:
+            '*/*':
+              schema:
+                type: string
+          description: Too Many Requests
+        "200":
+          content:
+            application/json:
+              example:
+                isCompatible: true
+                gasConsumedOverhead: 0x0
+                dataGasConsumedOverhead: 0x0
+              schema:
+                $ref: '#/components/schemas/GaslessStatus'
+          description: OK
+          headers:
+            signature:
+              description: "The response body signature. Only returned when 'ask-signature'\
+                \ has been provided. To validate the signature, you need first to\
+                \ encode the body using keccak and to compute the hash with the encoded\
+                \ value. Then your can verify the signature using the public key,\
+                \ the hash and the signature. You can find an example here: https://github.com/419Labs/avnu-sdk/blob/main/src/services.ts#L23"
+              explode: false
+              schema:
+                type: string
+              style: simple
+      summary: Check if the account is compatible with the gasless service
+      tags:
+      - Paymaster
+  /swap/v2/tokens:
+    get:
+      description: This endpoint allows to fetch the list of all officially supported
+        tokens
+      operationId: getTokens
+      parameters:
+      - description: Zero-based page index (0..N)
+        explode: true
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 0
+          type: integer
+        style: form
+      - description: The size of the page to be returned
+        explode: true
+        in: query
+        name: size
+        required: false
+        schema:
+          default: 20
+          type: integer
+        style: form
+      - description: "Sorting criteria in the format: property,(asc|desc). Default\
+          \ sort order is ascending. Multiple sort criteria are supported."
+        explode: true
+        in: query
+        name: sort
+        required: false
+        schema:
+          items:
+            type: string
+          type: array
+        style: form
+      - description: "When the given value is provided with the value 'true', the\
+          \ response header 'signature' will be returned."
+        explode: false
+        in: header
+        name: ask-signature
+        required: false
+        schema:
+          type: string
+        style: simple
+      responses:
+        "401":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Unauthorized
+        "400":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Bad Request
+        "500":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Internal Server Error
+        "429":
+          content:
+            '*/*':
+              schema:
+                type: string
+          description: Too Many Requests
+        "200":
+          content:
+            application/json:
+              example:
+                content:
+                - name: Ethereum
+                  address: 0x49d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7
+                  symbol: ETH
+                  decimals: 18
+                  chainId: 0x534e5f474f45524c49
+                  logoUri: https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png
+                - name: Dai Stablecoin
+                  address: 0xda114221cb83fa859dbdb4c44beeaa0bb37c7537ad5ae66fe5e0efd20e6eb3
+                  symbol: DAI
+                  decimals: 18
+                  chainId: 0x534e5f474f45524c49
+                  logoUri: https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x6B175474E89094C44Da98b954EedeAC495271d0F/logo.png
+                - name: Lords
+                  address: 0x124aeb495b947201f5fac96fd1138e326ad86195b98df6dec9009158a533b49
+                  symbol: LORDS
+                  decimals: 18
+                  chainId: 0x534e5f474f45524c49
+                  logoUri: https://assets.coingecko.com/coins/images/22171/small/Frame_1.png
+                - name: Liquity USD
+                  address: 0x70a76fd48ca0ef910631754d77dd822147fe98a569b826ec85e3c33fde586ac
+                  symbol: LUSD
+                  decimals: 18
+                  chainId: 0x534e5f474f45524c49
+                  logoUri: https://assets.coingecko.com/coins/images/14666/small/Group_3.png
+                - name: Rocket Pool ETH
+                  address: 0x319111a5037cbec2b3e638cc34a3474e2d2608299f3e62866e9cc683208c610
+                  symbol: rETH
+                  decimals: 18
+                  chainId: 0x534e5f474f45524c49
+                  logoUri: https://assets.coingecko.com/coins/images/20764/large/reth.png
+                - name: Tether
+                  address: 0x68f5c6a61780768455de69077e07e89787839bf8166decfbf92b645209c0fb8
+                  symbol: USDT
+                  decimals: 6
+                  chainId: 0x534e5f474f45524c49
+                  logoUri: https://assets.coingecko.com/coins/images/325/small/Tether.png
+                - name: Uniswap
+                  address: 0x49210ffc442172463f3177147c1aeaa36c51d152c1b0630f2364c300d4f48ee
+                  symbol: UNI
+                  decimals: 18
+                  chainId: 0x534e5f474f45524c49
+                  logoUri: https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984/logo.png
+                - name: USDC
+                  address: 0x53c91253bc9682c04929ca02ed00b3e423f6710d2ee7e0d5ebb06f3ecf368a8
+                  symbol: USDC
+                  decimals: 6
+                  chainId: 0x534e5f474f45524c49
+                  logoUri: https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png
+                - name: Wrapped BTC
+                  address: 0x3fe2b97c1fd336e750087d68b9b867997fd64a2661ff3ca5a7c771641e8e7ac
+                  symbol: WBTC
+                  decimals: 8
+                  chainId: 0x534e5f474f45524c49
+                  logoUri: https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599/logo.png
+                - name: Wrapped liquid staked Ether 2.0
+                  address: 0x42b8f0484674ca266ac5d08e4ac6a3fe65bd3129795def2dca5c34ecc5f96d2
+                  symbol: wstETH
+                  decimals: 18
+                  chainId: 0x534e5f474f45524c49
+                  logoUri: https://static.starkscan.co/tokens/0x042b8f0484674ca266ac5d08e4ac6a3fe65bd3129795def2dca5c34ecc5f96d2/icons/QmaxTVxd6ZWrotuG64LiuL8PCEgwjiHiQF9isCu8QKgneP
+                pageable:
+                  pageNumber: 0
+                  pageSize: 100
+                  sort:
+                    empty: true
+                    sorted: false
+                    unsorted: true
+                  offset: 0
+                  paged: true
+                  unpaged: false
+                last: true
+                totalPages: 1
+                totalElements: 10
+                first: true
+                size: 100
+                number: 0
+                sort:
+                  empty: true
+                  sorted: false
+                  unsorted: true
+                numberOfElements: 10
+                empty: false
+              schema:
+                $ref: '#/components/schemas/ExecuteSwapResponse'
+          description: OK
+          headers:
+            signature:
+              description: "The response body signature. Only returned when 'ask-signature'\
+                \ has been provided. To validate the signature, you need first to\
+                \ encode the body using keccak and to compute the hash with the encoded\
+                \ value. Then your can verify the signature using the public key,\
+                \ the hash and the signature. You can find an example here: https://github.com/419Labs/avnu-sdk/blob/main/src/services.ts#L23"
+              explode: false
+              schema:
+                type: string
+              style: simple
+      summary: Fetch supported tokens
+      tags:
+      - Swap
+  /swap/v2/sources:
+    get:
+      description: This endpoint allows to return the list of all supported sources
+      operationId: getSources
+      parameters:
+      - description: Zero-based page index (0..N)
+        explode: true
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 0
+          type: integer
+        style: form
+      - description: The size of the page to be returned
+        explode: true
+        in: query
+        name: size
+        required: false
+        schema:
+          default: 20
+          type: integer
+        style: form
+      - description: "Sorting criteria in the format: property,(asc|desc). Default\
+          \ sort order is ascending. Multiple sort criteria are supported."
+        explode: true
+        in: query
+        name: sort
+        required: false
+        schema:
+          items:
+            type: string
+          type: array
+        style: form
+      - description: "When the given value is provided with the value 'true', the\
+          \ response header 'signature' will be returned."
+        explode: false
+        in: header
+        name: ask-signature
+        required: false
+        schema:
+          type: string
+        style: simple
+      responses:
+        "401":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Unauthorized
+        "400":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Bad Request
+        "500":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Internal Server Error
+        "429":
+          content:
+            '*/*':
+              schema:
+                type: string
+          description: Too Many Requests
+        "200":
+          content:
+            application/json:
+              example:
+              - name: 10kSwap
+                address: 0x7a6f98c03379b9513ca84cca1373ff452a7462a3b61598f0af5bb27ad7f76d1
+                icon: https://pbs.twimg.com/profile_images/1567441002063069184/SGtDtW-C_400x400.jpg
+                type: DEX
+              - name: Ekubo
+                address: 0x5dd3d2f4429af886cd1a3b08289dbcea99a294197e9eb43b0e0325b4b
+                icon: ""
+                type: DEX
+              - name: JediSwap
+                address: 0x41fd22b238fa21cfcf5dd45a8548974d8263b3a531a60388411c5e230f97023
+                icon: https://pbs.twimg.com/profile_images/1487682615742459912/s1zdkTHF_400x400.jpg
+                type: DEX
+              - name: MySwap
+                address: 0x10884171baf1914edc28d7afb619b40a4051cfae78a094a55d230f19e944a28
+                icon: ""
+                type: DEX
+              - name: MySwapV2
+                address: 0x1114c7103e12c2b2ecbd3a2472ba9c48ddcbf702b1c242dd570057e26212111
+                icon: ""
+                type: DEX
+              - name: SithSwap
+                address: 0x28c858a586fa12123a1ccb337a0a3b369281f91ea00544d0c086524b759f627
+                icon: ""
+                type: DEX
+              schema:
+                $ref: '#/components/schemas/ExecuteSwapResponse'
+          description: OK
+          headers:
+            signature:
+              description: "The response body signature. Only returned when 'ask-signature'\
+                \ has been provided. To validate the signature, you need first to\
+                \ encode the body using keccak and to compute the hash with the encoded\
+                \ value. Then your can verify the signature using the public key,\
+                \ the hash and the signature. You can find an example here: https://github.com/419Labs/avnu-sdk/blob/main/src/services.ts#L23"
+              explode: false
+              schema:
+                type: string
+              style: simple
+      summary: Fetch the list of supported sources
+      tags:
+      - Swap
+  /swap/v2/quotes:
+    get:
+      description: "This endpoint permits you to receive the best quotes for performing\
+        \ a swap. The endpoint provides default quotes that are sorted in descending\
+        \ order (best first). Each quote is assigned a unique quoteId, which you will\
+        \ use when making calls to the /swap/v2/build or /swap/v2/execute endpoints\
+        \ to initiate the actual swap process."
+      operationId: getQuotes
+      parameters:
+      - description: The token address user wants to sell
+        example: 0x49d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7
+        explode: true
+        in: query
+        name: sellTokenAddress
+        required: true
+        schema:
+          type: string
+        style: form
+      - description: The token address user wants to buy
+        example: 0xda114221cb83fa859dbdb4c44beeaa0bb37c7537ad5ae66fe5e0efd20e6eb3
+        explode: true
+        in: query
+        name: buyTokenAddress
+        required: true
+        schema:
+          type: string
+        style: form
+      - description: The amount of token user wants to sell. It must be defined if
+          buyAmount is not defined.
+        example: 0x38d7ea4c68000
+        explode: true
+        in: query
+        name: sellAmount
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: The exact amount of token user wants to buy. It must be defined
+          if sellAmount is not defined.
+        example: 0x38d7ea4c68000
+        explode: true
+        in: query
+        name: buyAmount
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: The address which will fill the quote
+        example: 0x052D8E9778D026588a51595E30B0F45609B4F771EecF0E335CdeFeD1d84a9D89
+        explode: true
+        in: query
+        name: takerAddress
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: The sources that the user wants to exclude
+        example: 10KSwap
+        explode: true
+        in: query
+        name: excludeSources
+        required: false
+        schema:
+          items:
+            type: string
+          type: array
+        style: form
+      - description: The maximum number of returned quotes
+        example: 1
+        explode: true
+        in: query
+        name: size
+        required: false
+        schema:
+          format: int64
+          maximum: 5
+          minimum: 1
+          type: integer
+        style: form
+      - description: "Fee amount in bps, 30 is 0.3%"
+        example: 0x3
+        explode: true
+        in: query
+        name: integratorFees
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Required when `integratorFees` is defined. You need to provide
+          the address of your fee collector.
+        example: 0x01238E9778D026588a51595E30B0F45609B4F771EecF0E335CdeFeD1d84a9D89
+        explode: true
+        in: query
+        name: integratorFeeRecipient
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: The name of your application
+        example: Swagger UI
+        explode: true
+        in: query
+        name: integratorName
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: false
+        in: header
+        name: Origin
+        required: false
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: header
+        name: User-Agent
+        required: false
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: header
+        name: X-FORWARDED-FOR
+        required: false
+        schema:
+          type: string
+        style: simple
+      - description: "When the given value is provided with the value 'true', the\
+          \ response header 'signature' will be returned."
+        explode: false
+        in: header
+        name: ask-signature
+        required: false
+        schema:
+          type: string
+        style: simple
+      responses:
+        "401":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Unauthorized
+        "400":
+          content:
+            application/json:
+              examples:
+                Given addresses are empty:
+                  description: Given addresses are empty
+                  value:
+                    messages:
+                    - Sell token address is empty
+                    - Buy token address is empty
+                Amount is not an hex:
+                  description: Amount is not an hex
+                  value:
+                    messages:
+                    - Sell amount is empty or invalid. Amount should be in hex format.
+                IntegratorFees is in invalid format:
+                  description: IntegratorFees is in invalid format
+                  value:
+                    messages:
+                    - integratorFees must start with 0x
+                Invalid integratorFeeRecipient:
+                  description: Invalid integratorFeeRecipient
+                  value:
+                    messages:
+                    - integratorFeeRecipient must be defined when integratorFees is
+                      provided
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Bad Request
+        "500":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Internal Server Error
+        "429":
+          content:
+            '*/*':
+              schema:
+                type: string
+          description: Too Many Requests
+        "200":
+          content:
+            application/json:
+              example:
+              - quoteId: 76fea281-8931-4f36-8391-5a5a7fa9dd43
+                sellTokenAddress: 0x49d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7
+                sellAmount: 0x38d7ea4c68000
+                sellAmountInUsd: 3.087
+                buyTokenAddress: 0x4718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d
+                buyAmount: 0x220cb9287b55985a
+                buyAmountInUsd: 3.085684
+                buyAmountWithoutFees: 0x220e778b2c08cc00
+                buyAmountWithoutFeesInUsd: 3.086301
+                estimatedAmount: true
+                chainId: 0x534e5f4d41494e
+                blockNumber: 0x9ad32
+                expiry: null
+                routes:
+                - name: Nostra
+                  address: 0x49ff5b3a7d38e2b50198f408fa8281635b5bc81ee49ab87ac36c8324c214427
+                  percent: 1
+                  sellTokenAddress: 0x49d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7
+                  buyTokenAddress: 0x4718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d
+                  routeInfo: {}
+                  routes: []
+                gasFees: 0x24161a4c187
+                gasFeesInUsd: 0.007655
+                avnuFees: 0x1be62b0b333a6
+                avnuFeesInUsd: 6.17E-4
+                avnuFeesBps: 0x2
+                integratorFees: 0x0
+                integratorFeesInUsd: 0
+                integratorFeesBps: 0x0
+                priceRatioUsd: -4.26303854875368
+                liquiditySource: DEX_AGGREGATOR
+                sellTokenPriceInUsd: 3085.684
+                buyTokenPriceInUsd: 1.25818223442551
+                gasless:
+                  active: true
+                  gasTokenPrices:
+                  - tokenAddress: 0x53c91253bc9682c04929ca02ed00b3e423f6710d2ee7e0d5ebb06f3ecf368a8
+                    gasFeesInGasToken: 0x20d7
+                    gasFeesInUsd: 0.00842
+                  - tokenAddress: 0x68f5c6a61780768455de69077e07e89787839bf8166decfbf92b645209c0fb8
+                    gasFeesInGasToken: 0x20d4
+                    gasFeesInUsd: 0.00842
+                exactTokenTo: false
+              schema:
+                $ref: '#/components/schemas/Quote'
+          description: OK
+          headers:
+            signature:
+              description: "The response body signature. Only returned when 'ask-signature'\
+                \ has been provided. To validate the signature, you need first to\
+                \ encode the body using keccak and to compute the hash with the encoded\
+                \ value. Then your can verify the signature using the public key,\
+                \ the hash and the signature. You can find an example here: https://github.com/419Labs/avnu-sdk/blob/main/src/services.ts#L23"
+              explode: false
+              schema:
+                type: string
+              style: simple
+      summary: Find the best quotes
+      tags:
+      - Swap
+  /swap/v2/prices:
+    get:
+      description: This endpoint returns the prices of AMM without any path optimization.
+        It allows to measure the performance of the results from the getQuotes endpoints.
+        The prices will be returned and are sorted (best first).
+      operationId: getPrices
+      parameters:
+      - description: The token address user wants to sell
+        example: 0x49d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7
+        explode: true
+        in: query
+        name: sellTokenAddress
+        required: true
+        schema:
+          type: string
+        style: form
+      - description: The token address user wants to buy
+        example: 0x4718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d
+        explode: true
+        in: query
+        name: buyTokenAddress
+        required: true
+        schema:
+          type: string
+        style: form
+      - description: The Amount of token user wants to sell
+        example: 0x038d7ea4c68000
+        explode: true
+        in: query
+        name: sellAmount
+        required: true
+        schema:
+          type: string
+        style: form
+      - description: "When the given value is provided with the value 'true', the\
+          \ response header 'signature' will be returned."
+        explode: false
+        in: header
+        name: ask-signature
+        required: false
+        schema:
+          type: string
+        style: simple
+      responses:
+        "401":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Unauthorized
+        "400":
+          content:
+            application/json:
+              examples:
+                Given addresses are empty:
+                  description: Given addresses are empty
+                  value:
+                    messages:
+                    - Sell token address is empty
+                    - Buy token address is empty
+                Same tokens:
+                  description: Same tokens
+                  value:
+                    messages:
+                    - BuyTokenAddress and sellTokenAddress are the same
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Bad Request
+        "500":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Internal Server Error
+        "429":
+          content:
+            '*/*':
+              schema:
+                type: string
+          description: Too Many Requests
+        "200":
+          content:
+            application/json:
+              example:
+              - sellTokenAddress: 0x49d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7
+                sellAmount: 0x38d7ea4c68000
+                sellAmountInUsd: 3.087
+                buyTokenAddress: 0x4718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d
+                buyAmount: 0x222d1c90a5737c00
+                buyAmountInUsd: 3.097149
+                chainId: 0x534e5f4d41494e
+                blockNumber: 0x9ad32
+                sourceName: Haiko
+                priceRatioUsd: 32.8765792031099
+                gasFees: 0xacdf816f801
+                gasFeesInUsd: 0.036673
+              - sellTokenAddress: 0x49d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7
+                sellAmount: 0x38d7ea4c68000
+                sellAmountInUsd: 3.087
+                buyTokenAddress: 0x4718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d
+                buyAmount: 0x222ba1c20154ac00
+                buyAmountInUsd: 3.096625
+                chainId: 0x534e5f4d41494e
+                blockNumber: 0x9ad32
+                sourceName: StarkDefi
+                priceRatioUsd: 31.1791383219952
+                gasFees: 0x3f651970e68
+                gasFeesInUsd: 0.013448
+              - sellTokenAddress: 0x49d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7
+                sellAmount: 0x38d7ea4c68000
+                sellAmountInUsd: 3.087
+                buyTokenAddress: 0x4718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d
+                buyAmount: 0x222167a664819400
+                buyAmountInUsd: 3.093005
+                chainId: 0x534e5f4d41494e
+                blockNumber: 0x9ad32
+                sourceName: SithSwap
+                priceRatioUsd: 19.4525429219302
+                gasFees: 0x28b8134b8f6
+                gasFeesInUsd: 0.008638
+              - sellTokenAddress: 0x49d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7
+                sellAmount: 0x38d7ea4c68000
+                sellAmountInUsd: 3.087
+                buyTokenAddress: 0x4718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d
+                buyAmount: 0x22185b4438333c00
+                buyAmountInUsd: 3.089802
+                chainId: 0x534e5f4d41494e
+                blockNumber: 0x9ad32
+                sourceName: MySwapCL
+                priceRatioUsd: 9.07677356657041
+                gasFees: 0x35e2bc06572
+                gasFeesInUsd: 0.011431
+              - sellTokenAddress: 0x49d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7
+                sellAmount: 0x38d7ea4c68000
+                sellAmountInUsd: 3.087
+                buyTokenAddress: 0x4718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d
+                buyAmount: 0x22180ee9d5778800
+                buyAmountInUsd: 3.089696
+                chainId: 0x534e5f4d41494e
+                blockNumber: 0x9ad32
+                sourceName: Ekubo
+                priceRatioUsd: 8.73339812115228
+                gasFees: 0x317f2e72bde
+                gasFeesInUsd: 0.0105
+              - sellTokenAddress: 0x49d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7
+                sellAmount: 0x38d7ea4c68000
+                sellAmountInUsd: 3.087
+                buyTokenAddress: 0x4718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d
+                buyAmount: 0x220e778b2c08cc00
+                buyAmountInUsd: 3.086301
+                chainId: 0x534e5f4d41494e
+                blockNumber: 0x9ad32
+                sourceName: Nostra
+                priceRatioUsd: -2.26433430515135
+                gasFees: 0x24161a4c187
+                gasFeesInUsd: 0.007655
+              - sellTokenAddress: 0x49d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7
+                sellAmount: 0x38d7ea4c68000
+                sellAmountInUsd: 3.087
+                buyTokenAddress: 0x4718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d
+                buyAmount: 0x220e3197e0c77400
+                buyAmountInUsd: 3.086204
+                chainId: 0x534e5f4d41494e
+                blockNumber: 0x9ad32
+                sourceName: 10kSwap
+                priceRatioUsd: -2.57855523161743
+                gasFees: 0x229f95c59ac
+                gasFeesInUsd: 0.007345
+              - sellTokenAddress: 0x49d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7
+                sellAmount: 0x38d7ea4c68000
+                sellAmountInUsd: 3.087
+                buyTokenAddress: 0x4718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d
+                buyAmount: 0x21f99e40777bee00
+                buyAmountInUsd: 3.078921
+                chainId: 0x534e5f4d41494e
+                blockNumber: 0x9ad32
+                sourceName: JediSwap
+                priceRatioUsd: -26.1710398445102
+                gasFees: 0x25cb0a3e6be
+                gasFeesInUsd: 0.008017
+              schema:
+                $ref: '#/components/schemas/Quote'
+          description: OK
+          headers:
+            signature:
+              description: "The response body signature. Only returned when 'ask-signature'\
+                \ has been provided. To validate the signature, you need first to\
+                \ encode the body using keccak and to compute the hash with the encoded\
+                \ value. Then your can verify the signature using the public key,\
+                \ the hash and the signature. You can find an example here: https://github.com/419Labs/avnu-sdk/blob/main/src/services.ts#L23"
+              explode: false
+              schema:
+                type: string
+              style: simple
+      summary: Find the prices of DEX applications
+      tags:
+      - Swap
+  /swap/v1/tokens:
+    get:
+      description: This endpoint allows to fetch the list of all officially supported
+        tokens
+      operationId: getTokens_1
+      parameters:
+      - description: Zero-based page index (0..N)
+        explode: true
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 0
+          type: integer
+        style: form
+      - description: The size of the page to be returned
+        explode: true
+        in: query
+        name: size
+        required: false
+        schema:
+          default: 20
+          type: integer
+        style: form
+      - description: "Sorting criteria in the format: property,(asc|desc). Default\
+          \ sort order is ascending. Multiple sort criteria are supported."
+        explode: true
+        in: query
+        name: sort
+        required: false
+        schema:
+          items:
+            type: string
+          type: array
+        style: form
+      - description: "When the given value is provided with the value 'true', the\
+          \ response header 'signature' will be returned."
+        explode: false
+        in: header
+        name: ask-signature
+        required: false
+        schema:
+          type: string
+        style: simple
+      responses:
+        "401":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Unauthorized
+        "400":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Bad Request
+        "500":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Internal Server Error
+        "429":
+          content:
+            '*/*':
+              schema:
+                type: string
+          description: Too Many Requests
+        "200":
+          content:
+            application/json:
+              example:
+                content:
+                - name: Ethereum
+                  address: 0x49d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7
+                  symbol: ETH
+                  decimals: 18
+                  chainId: 0x534e5f474f45524c49
+                  logoUri: https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png
+                - name: Dai Stablecoin
+                  address: 0xda114221cb83fa859dbdb4c44beeaa0bb37c7537ad5ae66fe5e0efd20e6eb3
+                  symbol: DAI
+                  decimals: 18
+                  chainId: 0x534e5f474f45524c49
+                  logoUri: https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x6B175474E89094C44Da98b954EedeAC495271d0F/logo.png
+                - name: Lords
+                  address: 0x124aeb495b947201f5fac96fd1138e326ad86195b98df6dec9009158a533b49
+                  symbol: LORDS
+                  decimals: 18
+                  chainId: 0x534e5f474f45524c49
+                  logoUri: https://assets.coingecko.com/coins/images/22171/small/Frame_1.png
+                - name: Liquity USD
+                  address: 0x70a76fd48ca0ef910631754d77dd822147fe98a569b826ec85e3c33fde586ac
+                  symbol: LUSD
+                  decimals: 18
+                  chainId: 0x534e5f474f45524c49
+                  logoUri: https://assets.coingecko.com/coins/images/14666/small/Group_3.png
+                - name: Rocket Pool ETH
+                  address: 0x319111a5037cbec2b3e638cc34a3474e2d2608299f3e62866e9cc683208c610
+                  symbol: rETH
+                  decimals: 18
+                  chainId: 0x534e5f474f45524c49
+                  logoUri: https://assets.coingecko.com/coins/images/20764/large/reth.png
+                - name: Tether
+                  address: 0x68f5c6a61780768455de69077e07e89787839bf8166decfbf92b645209c0fb8
+                  symbol: USDT
+                  decimals: 6
+                  chainId: 0x534e5f474f45524c49
+                  logoUri: https://assets.coingecko.com/coins/images/325/small/Tether.png
+                - name: Uniswap
+                  address: 0x49210ffc442172463f3177147c1aeaa36c51d152c1b0630f2364c300d4f48ee
+                  symbol: UNI
+                  decimals: 18
+                  chainId: 0x534e5f474f45524c49
+                  logoUri: https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984/logo.png
+                - name: USDC
+                  address: 0x53c91253bc9682c04929ca02ed00b3e423f6710d2ee7e0d5ebb06f3ecf368a8
+                  symbol: USDC
+                  decimals: 6
+                  chainId: 0x534e5f474f45524c49
+                  logoUri: https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png
+                - name: Wrapped BTC
+                  address: 0x3fe2b97c1fd336e750087d68b9b867997fd64a2661ff3ca5a7c771641e8e7ac
+                  symbol: WBTC
+                  decimals: 8
+                  chainId: 0x534e5f474f45524c49
+                  logoUri: https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599/logo.png
+                - name: Wrapped liquid staked Ether 2.0
+                  address: 0x42b8f0484674ca266ac5d08e4ac6a3fe65bd3129795def2dca5c34ecc5f96d2
+                  symbol: wstETH
+                  decimals: 18
+                  chainId: 0x534e5f474f45524c49
+                  logoUri: https://static.starkscan.co/tokens/0x042b8f0484674ca266ac5d08e4ac6a3fe65bd3129795def2dca5c34ecc5f96d2/icons/QmaxTVxd6ZWrotuG64LiuL8PCEgwjiHiQF9isCu8QKgneP
+                pageable:
+                  pageNumber: 0
+                  pageSize: 100
+                  sort:
+                    empty: true
+                    sorted: false
+                    unsorted: true
+                  offset: 0
+                  paged: true
+                  unpaged: false
+                last: true
+                totalPages: 1
+                totalElements: 10
+                first: true
+                size: 100
+                number: 0
+                sort:
+                  empty: true
+                  sorted: false
+                  unsorted: true
+                numberOfElements: 10
+                empty: false
+              schema:
+                $ref: '#/components/schemas/ExecuteSwapResponse'
+          description: OK
+          headers:
+            signature:
+              description: "The response body signature. Only returned when 'ask-signature'\
+                \ has been provided. To validate the signature, you need first to\
+                \ encode the body using keccak and to compute the hash with the encoded\
+                \ value. Then your can verify the signature using the public key,\
+                \ the hash and the signature. You can find an example here: https://github.com/419Labs/avnu-sdk/blob/main/src/services.ts#L23"
+              explode: false
+              schema:
+                type: string
+              style: simple
+      summary: Fetch supported tokens
+      tags:
+      - Swap
+  /swap/v1/sources:
+    get:
+      description: This endpoint allows to return the list of all supported sources
+      operationId: getSources_1
+      parameters:
+      - description: Zero-based page index (0..N)
+        explode: true
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 0
+          type: integer
+        style: form
+      - description: The size of the page to be returned
+        explode: true
+        in: query
+        name: size
+        required: false
+        schema:
+          default: 20
+          type: integer
+        style: form
+      - description: "Sorting criteria in the format: property,(asc|desc). Default\
+          \ sort order is ascending. Multiple sort criteria are supported."
+        explode: true
+        in: query
+        name: sort
+        required: false
+        schema:
+          items:
+            type: string
+          type: array
+        style: form
+      - description: "When the given value is provided with the value 'true', the\
+          \ response header 'signature' will be returned."
+        explode: false
+        in: header
+        name: ask-signature
+        required: false
+        schema:
+          type: string
+        style: simple
+      responses:
+        "401":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Unauthorized
+        "400":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Bad Request
+        "500":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Internal Server Error
+        "429":
+          content:
+            '*/*':
+              schema:
+                type: string
+          description: Too Many Requests
+        "200":
+          content:
+            application/json:
+              example:
+              - name: 10kSwap
+                address: 0x7a6f98c03379b9513ca84cca1373ff452a7462a3b61598f0af5bb27ad7f76d1
+                icon: https://pbs.twimg.com/profile_images/1567441002063069184/SGtDtW-C_400x400.jpg
+                type: DEX
+              - name: Ekubo
+                address: 0x5dd3d2f4429af886cd1a3b08289dbcea99a294197e9eb43b0e0325b4b
+                icon: ""
+                type: DEX
+              - name: JediSwap
+                address: 0x41fd22b238fa21cfcf5dd45a8548974d8263b3a531a60388411c5e230f97023
+                icon: https://pbs.twimg.com/profile_images/1487682615742459912/s1zdkTHF_400x400.jpg
+                type: DEX
+              - name: MySwap
+                address: 0x10884171baf1914edc28d7afb619b40a4051cfae78a094a55d230f19e944a28
+                icon: ""
+                type: DEX
+              - name: MySwapV2
+                address: 0x1114c7103e12c2b2ecbd3a2472ba9c48ddcbf702b1c242dd570057e26212111
+                icon: ""
+                type: DEX
+              - name: SithSwap
+                address: 0x28c858a586fa12123a1ccb337a0a3b369281f91ea00544d0c086524b759f627
+                icon: ""
+                type: DEX
+              schema:
+                $ref: '#/components/schemas/ExecuteSwapResponse'
+          description: OK
+          headers:
+            signature:
+              description: "The response body signature. Only returned when 'ask-signature'\
+                \ has been provided. To validate the signature, you need first to\
+                \ encode the body using keccak and to compute the hash with the encoded\
+                \ value. Then your can verify the signature using the public key,\
+                \ the hash and the signature. You can find an example here: https://github.com/419Labs/avnu-sdk/blob/main/src/services.ts#L23"
+              explode: false
+              schema:
+                type: string
+              style: simple
+      summary: Fetch the list of supported sources
+      tags:
+      - Swap
+  /swap/v1/quotes:
+    get:
+      description: "This endpoint permits you to receive the best quotes for performing\
+        \ a swap. The endpoint provides default quotes that are sorted in descending\
+        \ order (best first). Each quote is assigned a unique quoteId, which you will\
+        \ use when making calls to the /swap/v1/build or /swap/v1/execute endpoints\
+        \ to initiate the actual swap process."
+      operationId: getQuotes_1
+      parameters:
+      - description: The token address user wants to sell
+        example: 0x49d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7
+        explode: true
+        in: query
+        name: sellTokenAddress
+        required: true
+        schema:
+          type: string
+        style: form
+      - description: The token address user wants to buy
+        example: 0xda114221cb83fa859dbdb4c44beeaa0bb37c7537ad5ae66fe5e0efd20e6eb3
+        explode: true
+        in: query
+        name: buyTokenAddress
+        required: true
+        schema:
+          type: string
+        style: form
+      - description: The amount of token user wants to sell. It must be defined if
+          buyAmount is not defined.
+        example: 0x38d7ea4c68000
+        explode: true
+        in: query
+        name: sellAmount
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: The exact amount of token user wants to buy. It must be defined
+          if sellAmount is not defined.
+        example: 0x38d7ea4c68000
+        explode: true
+        in: query
+        name: buyAmount
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: The address which will fill the quote
+        example: 0x052D8E9778D026588a51595E30B0F45609B4F771EecF0E335CdeFeD1d84a9D89
+        explode: true
+        in: query
+        name: takerAddress
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: The sources that the user wants to exclude
+        example: 10KSwap
+        explode: true
+        in: query
+        name: excludeSources
+        required: false
+        schema:
+          items:
+            type: string
+          type: array
+        style: form
+      - description: The maximum number of returned quotes
+        example: 1
+        explode: true
+        in: query
+        name: size
+        required: false
+        schema:
+          format: int64
+          maximum: 5
+          minimum: 1
+          type: integer
+        style: form
+      - description: "Fee amount in bps, 30 is 0.3%"
+        example: 0x3
+        explode: true
+        in: query
+        name: integratorFees
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Required when `integratorFees` is defined. You need to provide
+          the address of your fee collector.
+        example: 0x01238E9778D026588a51595E30B0F45609B4F771EecF0E335CdeFeD1d84a9D89
+        explode: true
+        in: query
+        name: integratorFeeRecipient
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: The name of your application
+        example: Swagger UI
+        explode: true
+        in: query
+        name: integratorName
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: false
+        in: header
+        name: Origin
+        required: false
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: header
+        name: User-Agent
+        required: false
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: header
+        name: X-FORWARDED-FOR
+        required: false
+        schema:
+          type: string
+        style: simple
+      - description: "When the given value is provided with the value 'true', the\
+          \ response header 'signature' will be returned."
+        explode: false
+        in: header
+        name: ask-signature
+        required: false
+        schema:
+          type: string
+        style: simple
+      responses:
+        "401":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Unauthorized
+        "400":
+          content:
+            application/json:
+              examples:
+                Given addresses are empty:
+                  description: Given addresses are empty
+                  value:
+                    messages:
+                    - Sell token address is empty
+                    - Buy token address is empty
+                Amount is not an hex:
+                  description: Amount is not an hex
+                  value:
+                    messages:
+                    - Sell amount is empty or invalid. Amount should be in hex format.
+                IntegratorFees is in invalid format:
+                  description: IntegratorFees is in invalid format
+                  value:
+                    messages:
+                    - integratorFees must start with 0x
+                Invalid integratorFeeRecipient:
+                  description: Invalid integratorFeeRecipient
+                  value:
+                    messages:
+                    - integratorFeeRecipient must be defined when integratorFees is
+                      provided
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Bad Request
+        "500":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Internal Server Error
+        "429":
+          content:
+            '*/*':
+              schema:
+                type: string
+          description: Too Many Requests
+        "200":
+          content:
+            application/json:
+              example:
+              - quoteId: 410598bc-4de1-4157-b51d-644c6566a68c
+                sellTokenAddress: 0x49d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7
+                sellAmount: 0x38d7ea4c68000
+                sellAmountInUsd: 2.01779
+                buyTokenAddress: 0xda114221cb83fa859dbdb4c44beeaa0bb37c7537ad5ae66fe5e0efd20e6eb3
+                buyAmount: 0x1c1c7b1aef357297
+                buyAmountInUsd: 2.0235937
+                buyAmountWithoutFees: 0x1c1deba3847bb800
+                buyAmountWithoutFeesInUsd: 2.0239985
+                estimatedAmount: true
+                chainId: 0x534e5f4d41494e
+                blockNumber: 0x618d4
+                expiry: null
+                routes:
+                - name: SithSwap
+                  address: 0x28c858a586fa12123a1ccb337a0a3b369281f91ea00544d0c086524b759f627
+                  percent: 1
+                  sellTokenAddress: 0x49d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7
+                  buyTokenAddress: 0xda114221cb83fa859dbdb4c44beeaa0bb37c7537ad5ae66fe5e0efd20e6eb3
+                  routeInfo: {}
+                  routes: []
+                gasFees: 0x1c3768c4d467a
+                gasFeesInUsd: 1.0016085
+                avnuFees: 0x1708895464569
+                avnuFeesInUsd: 4.047E-4
+                avnuFeesBps: 0x2
+                integratorFees: 0x0
+                integratorFeesInUsd: 0
+                integratorFeesBps: 0x0
+                priceRatioUsd: 28.761719
+                liquiditySource: DEX_AGGREGATOR
+                sellTokenPriceInUsd: 2023.5936
+                buyTokenPriceInUsd: 0.99613
+              schema:
+                $ref: '#/components/schemas/Quote'
+          description: OK
+          headers:
+            signature:
+              description: "The response body signature. Only returned when 'ask-signature'\
+                \ has been provided. To validate the signature, you need first to\
+                \ encode the body using keccak and to compute the hash with the encoded\
+                \ value. Then your can verify the signature using the public key,\
+                \ the hash and the signature. You can find an example here: https://github.com/419Labs/avnu-sdk/blob/main/src/services.ts#L23"
+              explode: false
+              schema:
+                type: string
+              style: simple
+      summary: Find the best quotes
+      tags:
+      - Swap
+  /swap/v1/prices:
+    get:
+      description: This endpoint returns the prices of AMM without any path optimization.
+        It allows to measure the performance of the results from the getQuotes endpoints.
+        The prices will be returned and are sorted (best first).
+      operationId: getPrices_1
+      parameters:
+      - description: The token address user wants to sell
+        example: 0x49d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7
+        explode: true
+        in: query
+        name: sellTokenAddress
+        required: true
+        schema:
+          type: string
+        style: form
+      - description: The token address user wants to buy
+        example: 0x4718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d
+        explode: true
+        in: query
+        name: buyTokenAddress
+        required: true
+        schema:
+          type: string
+        style: form
+      - description: The Amount of token user wants to sell
+        example: 0x038d7ea4c68000
+        explode: true
+        in: query
+        name: sellAmount
+        required: true
+        schema:
+          type: string
+        style: form
+      - description: "When the given value is provided with the value 'true', the\
+          \ response header 'signature' will be returned."
+        explode: false
+        in: header
+        name: ask-signature
+        required: false
+        schema:
+          type: string
+        style: simple
+      responses:
+        "401":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Unauthorized
+        "400":
+          content:
+            application/json:
+              examples:
+                Given addresses are empty:
+                  description: Given addresses are empty
+                  value:
+                    messages:
+                    - Sell token address is empty
+                    - Buy token address is empty
+                Same tokens:
+                  description: Same tokens
+                  value:
+                    messages:
+                    - BuyTokenAddress and sellTokenAddress are the same
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Bad Request
+        "500":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Internal Server Error
+        "429":
+          content:
+            '*/*':
+              schema:
+                type: string
+          description: Too Many Requests
+        "200":
+          content:
+            application/json:
+              example:
+              - sellTokenAddress: 0x49d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7
+                sellAmount: 0x38d7ea4c68000
+                sellAmountInUsd: 2.01779
+                buyTokenAddress: 0xda114221cb83fa859dbdb4c44beeaa0bb37c7537ad5ae66fe5e0efd20e6eb3
+                buyAmount: 0x1bfe545c95f44400
+                buyAmountInUsd: 2.0151153
+                chainId: 0x534e5f4d41494e
+                blockNumber: 0x618da
+                sourceName: Ekubo
+                priceRatioUsd: -13.255859
+              - sellTokenAddress: 0x49d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7
+                sellAmount: 0x38d7ea4c68000
+                sellAmountInUsd: 2.01779
+                buyTokenAddress: 0xda114221cb83fa859dbdb4c44beeaa0bb37c7537ad5ae66fe5e0efd20e6eb3
+                buyAmount: 0x1bf8b931f49db300
+                buyAmountInUsd: 2.0135388
+                chainId: 0x534e5f4d41494e
+                blockNumber: 0x618da
+                sourceName: MySwapV2
+                priceRatioUsd: -21.069336
+              - sellTokenAddress: 0x49d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7
+                sellAmount: 0x38d7ea4c68000
+                sellAmountInUsd: 2.01779
+                buyTokenAddress: 0xda114221cb83fa859dbdb4c44beeaa0bb37c7537ad5ae66fe5e0efd20e6eb3
+                buyAmount: 0x1bf48f024fea3a00
+                buyAmountInUsd: 2.0123675
+                chainId: 0x534e5f4d41494e
+                blockNumber: 0x618da
+                sourceName: MySwap
+                priceRatioUsd: -26.874023
+              - sellTokenAddress: 0x49d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7
+                sellAmount: 0x38d7ea4c68000
+                sellAmountInUsd: 2.01779
+                buyTokenAddress: 0xda114221cb83fa859dbdb4c44beeaa0bb37c7537ad5ae66fe5e0efd20e6eb3
+                buyAmount: 0x1bef855a9739b800
+                buyAmountInUsd: 2.0109513
+                chainId: 0x534e5f4d41494e
+                blockNumber: 0x618da
+                sourceName: SithSwap
+                priceRatioUsd: -33.89258
+              - sellTokenAddress: 0x49d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7
+                sellAmount: 0x38d7ea4c68000
+                sellAmountInUsd: 2.01779
+                buyTokenAddress: 0xda114221cb83fa859dbdb4c44beeaa0bb37c7537ad5ae66fe5e0efd20e6eb3
+                buyAmount: 0x1bed733bf4715000
+                buyAmountInUsd: 2.0103688
+                chainId: 0x534e5f4d41494e
+                blockNumber: 0x618da
+                sourceName: 10kSwap
+                priceRatioUsd: -36.779297
+              - sellTokenAddress: 0x49d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7
+                sellAmount: 0x38d7ea4c68000
+                sellAmountInUsd: 2.01779
+                buyTokenAddress: 0xda114221cb83fa859dbdb4c44beeaa0bb37c7537ad5ae66fe5e0efd20e6eb3
+                buyAmount: 0x1bcfc99cada48f00
+                buyAmountInUsd: 2.002028
+                chainId: 0x534e5f4d41494e
+                blockNumber: 0x618da
+                sourceName: JediSwap
+                priceRatioUsd: -78.115234
+              schema:
+                $ref: '#/components/schemas/Quote'
+          description: OK
+          headers:
+            signature:
+              description: "The response body signature. Only returned when 'ask-signature'\
+                \ has been provided. To validate the signature, you need first to\
+                \ encode the body using keccak and to compute the hash with the encoded\
+                \ value. Then your can verify the signature using the public key,\
+                \ the hash and the signature. You can find an example here: https://github.com/419Labs/avnu-sdk/blob/main/src/services.ts#L23"
+              explode: false
+              schema:
+                type: string
+              style: simple
+      summary: Find the prices of DEX applications
+      tags:
+      - Swap
+components:
+  schemas:
+    ErrorResponse:
+      example:
+        messages:
+        - messages
+        - messages
+        revertError: revertError
+      properties:
+        messages:
+          items:
+            type: string
+          type: array
+        revertError:
+          type: string
+      required:
+      - messages
+      type: object
+    DeploymentDataDto:
+      description: "When this field is set, the paymaster will deploy the user's account\
+        \ before executing the typed data. To retrieve the deployment data, you can\
+        \ read https://community.starknet.io/t/snip-deployment-interface-between-dapps-and-wallets/101923.\
+        \ For now, the paymaster only allows the deployment of account for sponsored\
+        \ transactions."
+      example:
+        salt: salt
+        calldata:
+        - calldata
+        - calldata
+        unique: unique
+        sigdata:
+        - sigdata
+        - sigdata
+        class_hash: class_hash
+      properties:
+        class_hash:
+          type: string
+        salt:
+          type: string
+        unique:
+          type: string
+        calldata:
+          items:
+            type: string
+          type: array
+        sigdata:
+          items:
+            type: string
+          type: array
+      required:
+      - calldata
+      - class_hash
+      - salt
+      - sigdata
+      - unique
+      type: object
+    ExecuteRequest:
+      example:
+        userAddress: userAddress
+        typedData: typedData
+        signature:
+        - signature
+        - signature
+        deploymentData:
+          salt: salt
+          calldata:
+          - calldata
+          - calldata
+          unique: unique
+          sigdata:
+          - sigdata
+          - sigdata
+          class_hash: class_hash
+      properties:
+        userAddress:
+          description: The user's address
+          type: string
+        typedData:
+          description: The typed data that the user signed
+          type: string
+        signature:
+          description: The user's typed data signature
+          items:
+            description: The user's typed data signature
+            type: string
+          type: array
+        deploymentData:
+          $ref: '#/components/schemas/DeploymentDataDto'
+      required:
+      - signature
+      - typedData
+      - userAddress
+      type: object
+    ExecuteResponse:
+      example:
+        transactionHash: transactionHash
+      properties:
+        transactionHash:
+          description: The hash of the transaction
+          type: string
+      required:
+      - transactionHash
+      type: object
+    BuildTypedDataRequest:
+      example:
+        userAddress: userAddress
+        gasTokenAddress: gasTokenAddress
+        accountClassHash: accountClassHash
+        maxGasTokenAmount: maxGasTokenAmount
+        calls:
+        - calldata:
+          - calldata
+          - calldata
+          entrypoint: approve
+          contractAddress: contractAddress
+        - calldata:
+          - calldata
+          - calldata
+          entrypoint: approve
+          contractAddress: contractAddress
+      properties:
+        userAddress:
+          description: The user's address
+          type: string
+        calls:
+          description: The list of calls that will be executed
+          items:
+            $ref: '#/components/schemas/Call'
+          type: array
+        gasTokenAddress:
+          description: "Gas token address.If null, there is two options:1. the user\
+            \ must have a reward compatible with the calls. In this case, the reward's\
+            \ sponsor will pay the gas fees in ETH.2. the api-key header must be field.\
+            \ The api-key's owner will be charged for the consumed gas fees in ETH"
+          type: string
+        maxGasTokenAmount:
+          description: "Max gas token amountIf null, there is two options:1. the user\
+            \ must have a reward compatible with the calls. In this case, the reward's\
+            \ sponsor will pay the gas fees in ETH.2. the api-key header must be field.\
+            \ The api-key's owner will be charged for the consumed gas fees in ETH"
+          type: string
+        accountClassHash:
+          description: "Only set this field when the account is not deployed. When\
+            \ the accountClassHash is defined, the API will not check the gasless\
+            \ compatibility by calling the supportsInterface entrypoint but will instead\
+            \ look into an internal map. If the classHash is not supported by the\
+            \ API, please contact us so we can quickly add support."
+          type: string
+      required:
+      - calls
+      - userAddress
+      type: object
+    Call:
+      description: The list of calls that will be executed
+      example:
+        calldata:
+        - calldata
+        - calldata
+        entrypoint: approve
+        contractAddress: contractAddress
+      properties:
+        contractAddress:
+          description: Contract's address
+          type: string
+        entrypoint:
+          description: Entrypoint (string format)
+          example: approve
+          type: string
+        calldata:
+          description: calldata (list of felt)
+          items:
+            description: calldata (list of felt)
+            type: string
+          type: array
+      required:
+      - calldata
+      - contractAddress
+      - entrypoint
+      type: object
+    Domain:
+      example:
+        chainId:
+          isString: true
+          content: content
+        separatorName$lib: separatorName$lib
+        name:
+          isString: true
+          content: content
+        version:
+          isString: true
+          content: content
+        revision: V0
+      properties:
+        name:
+          $ref: '#/components/schemas/JsonPrimitive'
+        version:
+          $ref: '#/components/schemas/JsonPrimitive'
+        chainId:
+          $ref: '#/components/schemas/JsonPrimitive'
+        revision:
+          enum:
+          - V0
+          - V1
+          type: string
+        separatorName$lib:
+          type: string
+      required:
+      - chainId
+      - name
+      - separatorName$lib
+      - version
+      type: object
+    JsonElement:
+      type: object
+    JsonPrimitive:
+      example:
+        isString: true
+        content: content
+      properties:
+        content:
+          type: string
+        isString:
+          type: boolean
+      required:
+      - content
+      - isString
+      type: object
+    Type:
+      example:
+        name: name
+        type: type
+      properties:
+        name:
+          type: string
+        type:
+          type: string
+      required:
+      - name
+      - type
+      type: object
+    TypedData:
+      example:
+        types:
+          key:
+          - name: name
+            type: type
+          - name: name
+            type: type
+        primaryType: primaryType
+        domain:
+          chainId:
+            isString: true
+            content: content
+          separatorName$lib: separatorName$lib
+          name:
+            isString: true
+            content: content
+          version:
+            isString: true
+            content: content
+          revision: V0
+        message:
+          entries:
+          - value: "{}"
+            key: key
+          - value: "{}"
+            key: key
+          size: 0
+          keys:
+          - keys
+          - keys
+          values:
+          - null
+          - null
+          isEmpty: true
+          content:
+            key: null
+      properties:
+        types:
+          additionalProperties:
+            items:
+              $ref: '#/components/schemas/Type'
+            type: array
+          type: object
+        primaryType:
+          type: string
+        domain:
+          $ref: '#/components/schemas/Domain'
+        message:
+          $ref: '#/components/schemas/TypedData_message'
+      required:
+      - domain
+      - message
+      - primaryType
+      - types
+      type: object
+    RegisterReward:
+      example:
+        protocol: AVNU
+        address: 0x039321741034d079C573bAd24dB5F012ed9614554301a2B08bDcb34E01d9C1BF
+        freeTx: 10
+        whitelistedCalls:
+        - entrypoint: approve
+          contractAddress: '*'
+        - entrypoint: approve
+          contractAddress: '*'
+        campaign: Onboarding
+        expirationDate: 2000-01-23T04:56:07.000+00:00
+      properties:
+        address:
+          description: The user's address
+          example: 0x039321741034d079C573bAd24dB5F012ed9614554301a2B08bDcb34E01d9C1BF
+          type: string
+        campaign:
+          description: The name of the company's campaign
+          example: Onboarding
+          type: string
+        protocol:
+          description: The protocol where the reward can be used
+          example: AVNU
+          type: string
+        freeTx:
+          description: The number of free transaction
+          example: 10
+          format: int64
+          type: integer
+        expirationDate:
+          description: Reward's expiration date
+          format: date-time
+          type: string
+        whitelistedCalls:
+          description: The list of whitelisted calls
+          items:
+            $ref: '#/components/schemas/WhitelistedCall'
+          type: array
+      required:
+      - address
+      - campaign
+      - freeTx
+      - whitelistedCalls
+      type: object
+    WhitelistedCall:
+      description: The list of whitelisted calls
+      example:
+        entrypoint: approve
+        contractAddress: '*'
+      properties:
+        contractAddress:
+          description: The value can be '*' if all contracts are whitelisted or can
+            be the contract address (hex format)
+          example: '*'
+          type: string
+        entrypoint:
+          description: The value can be '*' if all entrypoint are whitelisted or can
+            be the entrypoint name (string format)
+          example: approve
+          type: string
+      required:
+      - contractAddress
+      - entrypoint
+      type: object
+    Reward:
+      example:
+        date: 2000-01-23T04:56:07.000+00:00
+        sponsor: sponsor
+        protocol: protocol
+        address: address
+        freeTx: 0
+        whitelistedCalls:
+        - entrypoint: approve
+          contractAddress: '*'
+        - entrypoint: approve
+          contractAddress: '*'
+        campaign: campaign
+        remainingTx: 6
+        expirationDate: 2000-01-23T04:56:07.000+00:00
+      properties:
+        date:
+          description: Reward's creation date
+          format: date-time
+          type: string
+        address:
+          description: The user's address
+          type: string
+        sponsor:
+          description: The company that will pay the gas fees
+          type: string
+        campaign:
+          description: The name of the company's campaign
+          type: string
+        protocol:
+          description: The protocol where the reward can be used
+          type: string
+        freeTx:
+          description: The number of free transaction
+          format: int64
+          type: integer
+        remainingTx:
+          description: The number of remaining transactions
+          format: int64
+          type: integer
+        expirationDate:
+          description: Reward's expiration date
+          format: date-time
+          type: string
+        whitelistedCalls:
+          description: The list of whitelisted calls
+          items:
+            $ref: '#/components/schemas/WhitelistedCall'
+          type: array
+      required:
+      - address
+      - campaign
+      - date
+      - freeTx
+      - remainingTx
+      - sponsor
+      - whitelistedCalls
+      type: object
+    ExecuteSwapResponse:
+      example:
+        gasTokenAddress: gasTokenAddress
+        gasTokenAmount: gasTokenAmount
+        transactionHash: transactionHash
+      properties:
+        transactionHash:
+          description: The hash of the transaction
+          type: string
+        gasTokenAddress:
+          description: The address of the gas token used to pay gas fees
+          type: string
+        gasTokenAmount:
+          description: The amount of gas token used to pay gas fees
+          type: string
+      required:
+      - transactionHash
+      type: object
+    ExecuteSwapRequest:
+      example:
+        signature:
+        - signature
+        - signature
+        quoteId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+      properties:
+        quoteId:
+          description: The unique id of the quote
+          format: uuid
+          type: string
+        signature:
+          items:
+            type: string
+          type: array
+      required:
+      - quoteId
+      - signature
+      type: object
+    BuildSwapTypedDataRequest:
+      example:
+        gasTokenAddress: 0x053c91253bc9682c04929ca02ed00b3e423f6710d2ee7e0d5ebb06f3ecf368a8
+        maxGasTokenAmount: maxGasTokenAmount
+        takerAddress: 0x052D8E9778D026588a51595E30B0F45609B4F771EecF0E335CdeFeD1d84a9D89
+        slippage: 0.05
+        includeApprove: true
+        quoteId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+      properties:
+        quoteId:
+          description: The unique id of the quote
+          format: uuid
+          type: string
+        takerAddress:
+          description: The address which will fill the quote. Not required if then
+            taker address was provided during the quote request
+          example: 0x052D8E9778D026588a51595E30B0F45609B4F771EecF0E335CdeFeD1d84a9D89
+          type: string
+        slippage:
+          description: The maximum acceptable slippage of the buyAmount amount. Default
+            value is 1%. This value is ignored if slippage is not applicable to the
+            selected quote.Min value for gasless transaction is 0.5%
+          example: 0.05
+          maximum: 1
+          type: number
+        includeApprove:
+          description: "If true, the typed data will contains the approve call"
+          type: boolean
+        gasTokenAddress:
+          description: The gas token's address the user wants to spend to execute
+            the tx.
+          example: 0x053c91253bc9682c04929ca02ed00b3e423f6710d2ee7e0d5ebb06f3ecf368a8
+          type: string
+        maxGasTokenAmount:
+          type: string
+      required:
+      - gasTokenAddress
+      - includeApprove
+      - quoteId
+      - slippage
+      type: object
+    BuildSwapResponse:
+      example:
+        chainId: chainId
+        calldata:
+        - calldata
+        - calldata
+        entrypoint: entrypoint
+        contractAddress: contractAddress
+      properties:
+        chainId:
+          description: The chain's id
+          type: string
+        contractAddress:
+          description: The address of the contract to send call data to
+          type: string
+        entrypoint:
+          description: The entrypoint
+          type: string
+        calldata:
+          description: The call data required to be sent to the to contract address
+          items:
+            description: The call data required to be sent to the to contract address
+            type: string
+          type: array
+      required:
+      - calldata
+      - chainId
+      - contractAddress
+      - entrypoint
+      type: object
+    BuildSwapRequestDtoV2:
+      example:
+        takerAddress: 0x052D8E9778D026588a51595E30B0F45609B4F771EecF0E335CdeFeD1d84a9D89
+        slippage: 0.05
+        includeApprove: true
+        quoteId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+      properties:
+        quoteId:
+          description: The unique id of the quote
+          format: uuid
+          type: string
+        takerAddress:
+          description: The address which will fill the quote. Not required if then
+            taker address was provided during the quote request
+          example: 0x052D8E9778D026588a51595E30B0F45609B4F771EecF0E335CdeFeD1d84a9D89
+          type: string
+        slippage:
+          description: The maximum acceptable slippage of the buyAmount amount. Default
+            value is 5%. This value is ignored if slippage is not applicable to the
+            selected quote
+          example: 0.05
+          maximum: 1
+          minimum: 0
+          type: number
+        includeApprove:
+          description: "If true, the response will contains the approve call (if necessary)"
+          type: boolean
+      required:
+      - includeApprove
+      - quoteId
+      - slippage
+      type: object
+    BuildSwapRequest:
+      example:
+        takerAddress: 0x052D8E9778D026588a51595E30B0F45609B4F771EecF0E335CdeFeD1d84a9D89
+        slippage: 0.05
+        quoteId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+      properties:
+        quoteId:
+          description: The unique id of the quote
+          format: uuid
+          type: string
+        takerAddress:
+          description: The address which will fill the quote. Not required if then
+            taker address was provided during the quote request
+          example: 0x052D8E9778D026588a51595E30B0F45609B4F771EecF0E335CdeFeD1d84a9D89
+          type: string
+        slippage:
+          description: The maximum acceptable slippage of the buyAmount amount. Default
+            value is 5%. This value is ignored if slippage is not applicable to the
+            selected quote
+          example: 0.05
+          maximum: 1
+          minimum: 0
+          type: number
+      required:
+      - quoteId
+      - slippage
+      type: object
+    GaslessStatus:
+      example:
+        status: true
+      properties:
+        status:
+          description: The gasless status
+          type: boolean
+      required:
+      - status
+      type: object
+    SponsorActivity:
+      example:
+        succeededTxCount: 0
+        remainingCredits: remainingCredits
+        revertedTxCount: 6
+        txCount: 1
+        name: name
+        revertedGasFees: revertedGasFees
+        gasFees: gasFees
+        succeededGasFees: succeededGasFees
+      properties:
+        name:
+          description: The sponsor's name
+          type: string
+        succeededTxCount:
+          description: The number of succeeded transactions
+          format: int64
+          type: integer
+        revertedTxCount:
+          description: The number of reverted transactions
+          format: int64
+          type: integer
+        txCount:
+          description: The total number executed transactions
+          format: int64
+          type: integer
+        succeededGasFees:
+          description: The amount of ETH paid for succeeded transactions
+          type: string
+        revertedGasFees:
+          description: The amount of ETH paid for reverted transactions
+          type: string
+        gasFees:
+          description: The amount of ETH paid for all transactions
+          type: string
+        remainingCredits:
+          description: "The remaining credits. When zero, please contact us so you\
+            \ can recharge"
+          type: string
+      required:
+      - gasFees
+      - name
+      - remainingCredits
+      - revertedGasFees
+      - revertedTxCount
+      - succeededGasFees
+      - succeededTxCount
+      - txCount
+      type: object
+    GasTokenPriceDto:
+      example:
+        tokenAddress: tokenAddress
+        gasFeesInGasToken: gasFeesInGasToken
+        gasFeesInUsd: 4.145608029883936
+      properties:
+        tokenAddress:
+          description: The address of the gas token
+          type: string
+        gasFeesInGasToken:
+          description: The estimated amount of gas token to pay the gas fees
+          type: string
+        gasFeesInUsd:
+          description: The estimated amount of gas token to pay the gas fees in usd
+          format: double
+          type: number
+      required:
+      - gasFeesInGasToken
+      - gasFeesInUsd
+      - tokenAddress
+      type: object
+    Gasless:
+      example:
+        gasTokenPrices:
+        - tokenAddress: tokenAddress
+          gasFeesInGasToken: gasFeesInGasToken
+          gasFeesInUsd: 4.145608029883936
+        - tokenAddress: tokenAddress
+          gasFeesInGasToken: gasFeesInGasToken
+          gasFeesInUsd: 4.145608029883936
+        active: true
+      properties:
+        active:
+          description: "If true, the quote can be executed using gasless"
+          type: boolean
+        gasTokenPrices:
+          items:
+            $ref: '#/components/schemas/GasTokenPriceDto'
+          type: array
+      required:
+      - active
+      - gasTokenPrices
+      type: object
+    Quote:
+      example:
+        liquiditySource: TOKEN_WRAPPER
+        buyAmountInUsd: 6.027456183070403
+        buyAmountWithoutFeesInUsd: 1.4658129805029452
+        priceRatioUsd: 9.301444243932576
+        sellTokenPriceInUsd: 3.616076749251911
+        sellTokenAddress: sellTokenAddress
+        routes:
+        - buyTokenAddress: 0x005a643907b9a4bc6a55e9069c4fd5fd1f5c79a22470690f75556c4736e34426
+          address: 0x00975910cd99bc56bd289eaaa5cee6cd557f0ddafdb2ce6ebea15b158eb2c664
+          name: 10kSwap
+          sellTokenAddress: 0x03e85bfbb8e2a42b7bead9e88e9a1b19dbccf661471061807292120462396ec9
+          percent: 1
+        - buyTokenAddress: 0x005a643907b9a4bc6a55e9069c4fd5fd1f5c79a22470690f75556c4736e34426
+          address: 0x00975910cd99bc56bd289eaaa5cee6cd557f0ddafdb2ce6ebea15b158eb2c664
+          name: 10kSwap
+          sellTokenAddress: 0x03e85bfbb8e2a42b7bead9e88e9a1b19dbccf661471061807292120462396ec9
+          percent: 1
+        buyAmountWithoutFees: buyAmountWithoutFees
+        expiry: 5.962133916683182
+        buyTokenPriceInUsd: 2.027123023002322
+        gasless:
+          gasTokenPrices:
+          - tokenAddress: tokenAddress
+            gasFeesInGasToken: gasFeesInGasToken
+            gasFeesInUsd: 4.145608029883936
+          - tokenAddress: tokenAddress
+            gasFeesInGasToken: gasFeesInGasToken
+            gasFeesInUsd: 4.145608029883936
+          active: true
+        integratorFees: integratorFees
+        buyTokenAddress: buyTokenAddress
+        integratorFeesInUsd: 7.061401241503109
+        avnuFeesInUsd: 2.3021358869347655
+        gasFeesInUsd: 5.637376656633329
+        integratorFeesBps: integratorFeesBps
+        quoteId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        avnuFees: avnuFees
+        buyAmount: buyAmount
+        chainId: chainId
+        sellAmount: sellAmount
+        blockNumber: 0x1
+        avnuFeesBps: avnuFeesBps
+        sellAmountInUsd: 0.8008281904610115
+        gasFees: gasFees
+        estimatedAmount: true
+      properties:
+        quoteId:
+          description: The unique id of the quote
+          format: uuid
+          type: string
+        sellTokenAddress:
+          description: The token address user wants to sell
+          type: string
+        sellAmount:
+          description: The amount of sellAmount that would be sold in this swap
+          type: string
+        sellAmountInUsd:
+          description: The amount of sellAmount that would be sold in this swap in
+            usd
+          format: double
+          type: number
+        buyTokenAddress:
+          description: The token address user wants to buy
+          type: string
+        buyAmount:
+          description: The amount of buyToken that would be bought in this swap
+          type: string
+        buyAmountInUsd:
+          description: The amount of buyToken that would be bought in this swap in
+            usd
+          format: double
+          type: number
+        buyAmountWithoutFees:
+          description: The amount of buyToken without fees
+          type: string
+        buyAmountWithoutFeesInUsd:
+          description: The amount of buyToken without fees in usd
+          format: double
+          type: number
+        estimatedAmount:
+          description: "If true, user should define a slippage when he executes the\
+            \ quote"
+          type: boolean
+        chainId:
+          description: The chain's id
+          type: string
+        blockNumber:
+          description: Defined when quote comes from a DEX
+          example: 0x1
+          type: string
+        expiry:
+          description: Unix timestamp when quotes expires in seconds
+          type: number
+        routes:
+          items:
+            $ref: '#/components/schemas/Route'
+          type: array
+        gasFees:
+          description: The estimated amount of gas fees
+          type: string
+        gasFeesInUsd:
+          description: The estimated amount of gas fees in USD
+          format: double
+          type: number
+        avnuFees:
+          description: The actual fees taken by AVNU
+          type: string
+        avnuFeesInUsd:
+          description: The actual fees taken by AVNU is usd
+          format: double
+          type: number
+        avnuFeesBps:
+          description: The fees in bps taken by AVNU
+          type: string
+        integratorFees:
+          description: The actual fees taken by the integrator
+          type: string
+        integratorFeesInUsd:
+          description: The actual fees taken by the integrator in usd
+          format: double
+          type: number
+        integratorFeesBps:
+          description: The fees in bps taken by the integrator
+          type: string
+        priceRatioUsd:
+          description: Price ratio in usd and in bps
+          type: number
+        liquiditySource:
+          description: The type of liquidity source
+          enum:
+          - TOKEN_WRAPPER
+          - DEX_AGGREGATOR
+          - MARKET_MAKER
+          type: string
+        sellTokenPriceInUsd:
+          description: The amount in USD to buy 1 sellToken
+          format: double
+          type: number
+        buyTokenPriceInUsd:
+          description: The amount in USD to buy 1 buyToken
+          format: double
+          type: number
+        gasless:
+          $ref: '#/components/schemas/Gasless'
+      required:
+      - avnuFees
+      - avnuFeesBps
+      - avnuFeesInUsd
+      - buyAmount
+      - buyAmountInUsd
+      - buyAmountWithoutFees
+      - buyAmountWithoutFeesInUsd
+      - buyTokenAddress
+      - chainId
+      - estimatedAmount
+      - gasFees
+      - gasless
+      - integratorFees
+      - integratorFeesBps
+      - integratorFeesInUsd
+      - liquiditySource
+      - priceRatioUsd
+      - quoteId
+      - routes
+      - sellAmount
+      - sellAmountInUsd
+      - sellTokenAddress
+      type: object
+    Route:
+      example:
+        buyTokenAddress: 0x005a643907b9a4bc6a55e9069c4fd5fd1f5c79a22470690f75556c4736e34426
+        address: 0x00975910cd99bc56bd289eaaa5cee6cd557f0ddafdb2ce6ebea15b158eb2c664
+        name: 10kSwap
+        sellTokenAddress: 0x03e85bfbb8e2a42b7bead9e88e9a1b19dbccf661471061807292120462396ec9
+        percent: 1
+      properties:
+        name:
+          description: The name of the source
+          example: 10kSwap
+          type: string
+        address:
+          description: The address of the source
+          example: 0x00975910cd99bc56bd289eaaa5cee6cd557f0ddafdb2ce6ebea15b158eb2c664
+          type: string
+        percent:
+          description: The percentage distribution of sellToken. 1 is 100%
+          example: 1
+          type: number
+        sellTokenAddress:
+          description: The token address user wants to sell
+          example: 0x03e85bfbb8e2a42b7bead9e88e9a1b19dbccf661471061807292120462396ec9
+          type: string
+        buyTokenAddress:
+          description: The token address user wants to buy
+          example: 0x005a643907b9a4bc6a55e9069c4fd5fd1f5c79a22470690f75556c4736e34426
+          type: string
+      required:
+      - address
+      - buyTokenAddress
+      - name
+      - percent
+      - sellTokenAddress
+      type: object
+    TypedData_message_entries_inner:
+      example:
+        value: "{}"
+        key: key
+      properties:
+        value:
+          type: object
+        key:
+          type: string
+      type: object
+    TypedData_message:
+      additionalProperties:
+        $ref: '#/components/schemas/JsonElement'
+      example:
+        entries:
+        - value: "{}"
+          key: key
+        - value: "{}"
+          key: key
+        size: 0
+        keys:
+        - keys
+        - keys
+        values:
+        - null
+        - null
+        isEmpty: true
+        content:
+          key: null
+      properties:
+        content:
+          additionalProperties:
+            $ref: '#/components/schemas/JsonElement'
+          type: object
+          writeOnly: true
+        values:
+          items:
+            $ref: '#/components/schemas/JsonElement'
+          type: array
+        isEmpty:
+          type: boolean
+        size:
+          format: int32
+          type: integer
+        entries:
+          items:
+            $ref: '#/components/schemas/TypedData_message_entries_inner'
+          type: array
+          uniqueItems: true
+        keys:
+          items:
+            type: string
+          type: array
+          uniqueItems: true
+      required:
+      - entries
+      - isEmpty
+      - keys
+      - size
+      - values
+      type: object
