@@ -1,4 +1,4 @@
-module github.com/GIT_USER_ID/GIT_REPO_ID
+module github.com/saguillo2000/avnu-sdk-go
 
 go 1.18
 
