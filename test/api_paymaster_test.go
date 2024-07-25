@@ -11,10 +11,10 @@ package openapi
 
 import (
 	"context"
+	openapiclient "github.com/saguillo2000/avnu-sdk-go"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"testing"
-	openapiclient "github.com/GIT_USER_ID/GIT_REPO_ID"
 )
 
 func Test_openapi_PaymasterAPIService(t *testing.T) {
@@ -24,7 +24,7 @@ func Test_openapi_PaymasterAPIService(t *testing.T) {
 
 	t.Run("Test PaymasterAPIService BuildTypedData1", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		resp, httpRes, err := apiClient.PaymasterAPI.BuildTypedData1(context.Background()).Execute()
 
@@ -36,7 +36,7 @@ func Test_openapi_PaymasterAPIService(t *testing.T) {
 
 	t.Run("Test PaymasterAPIService Execute1", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		resp, httpRes, err := apiClient.PaymasterAPI.Execute1(context.Background()).Execute()
 
@@ -48,7 +48,7 @@ func Test_openapi_PaymasterAPIService(t *testing.T) {
 
 	t.Run("Test PaymasterAPIService GetGasTokenPrices", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		resp, httpRes, err := apiClient.PaymasterAPI.GetGasTokenPrices(context.Background()).Execute()
 
@@ -60,7 +60,7 @@ func Test_openapi_PaymasterAPIService(t *testing.T) {
 
 	t.Run("Test PaymasterAPIService GetRewards1", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var address string
 
@@ -74,7 +74,7 @@ func Test_openapi_PaymasterAPIService(t *testing.T) {
 
 	t.Run("Test PaymasterAPIService GetSponsor", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		resp, httpRes, err := apiClient.PaymasterAPI.GetSponsor(context.Background()).Execute()
 
@@ -86,7 +86,7 @@ func Test_openapi_PaymasterAPIService(t *testing.T) {
 
 	t.Run("Test PaymasterAPIService IsCompatible1", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var address string
 
@@ -100,7 +100,7 @@ func Test_openapi_PaymasterAPIService(t *testing.T) {
 
 	t.Run("Test PaymasterAPIService RegisterReward1", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var address string
 
@@ -114,7 +114,7 @@ func Test_openapi_PaymasterAPIService(t *testing.T) {
 
 	t.Run("Test PaymasterAPIService Status", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		resp, httpRes, err := apiClient.PaymasterAPI.Status(context.Background()).Execute()
 
